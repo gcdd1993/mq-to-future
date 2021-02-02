@@ -78,14 +78,6 @@ public class KafkaMessageQueueAdapterImpl<REQ extends TraceSupport, RES extends 
     private void _startListen() {
         KafkaReceiver.create(receiverOptions.subscription(Collections.singletonList(consumerTopic)))
                 .receive()
-                .filter(record -> {
-                    var traceId = record.value().getTraceId();
-                    if (!workerMap.containsKey(traceId)) {
-                        log.warn("cannot find any worker for trace id {}.", traceId);
-                        return false;
-                    }
-                    return true;
-                })
                 .doOnNext(record -> {
                     try {
                         var offset = record.receiverOffset();
@@ -144,6 +136,8 @@ public class KafkaMessageQueueAdapterImpl<REQ extends TraceSupport, RES extends 
             if (workerMap.containsKey(traceId)) {
                 workerMap.remove(traceId);
                 future.complete(res);
+            } else {
+                log.warn("cannot find any worker for trace id {}.", traceId);
             }
         }
     }
