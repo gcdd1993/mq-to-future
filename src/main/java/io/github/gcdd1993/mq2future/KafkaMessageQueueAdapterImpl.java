@@ -29,7 +29,6 @@ public class KafkaMessageQueueAdapterImpl<REQ extends TraceSupport, RES extends 
         implements MessageQueueAdapter<REQ, RES> {
     private final Timer timer = new Timer("KAFKA-MESSAGE-QUEUE-ADAPTER-TIMER");
     private final Map<String, Worker> workerMap = new ConcurrentHashMap<>(256);
-    private final String receiverGroupName;
     private final SenderOptions<Object, REQ> senderOptions;
     private final ReceiverOptions<Object, RES> receiverOptions;
     private final RES timeoutTraceSupport;
@@ -59,7 +58,6 @@ public class KafkaMessageQueueAdapterImpl<REQ extends TraceSupport, RES extends 
                                         String producerTopic,
                                         String consumerTopic,
                                         Duration timeoutDuration) {
-        this.receiverGroupName = receiverGroupName;
         this.timeoutTraceSupport = timeoutTraceSupport;
         this.producerTopic = producerTopic;
         this.consumerTopic = consumerTopic;
