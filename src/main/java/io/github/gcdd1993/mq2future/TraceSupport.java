@@ -1,4 +1,4 @@
-package com.github.gcdd1993.mq2future;
+package io.github.gcdd1993.mq2future;
 
 import java.io.Serializable;
 

@@ -1,13 +1,13 @@
-package com.github.gcdd1993.mq2future;
+package io.github.gcdd1993.mq2future;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import de.javakaffee.kryoserializers.*;
-import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.serialization.Deserializer;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationHandler;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
  * @date 2021/2/1
  * @since 1.0.0
  */
-public class KryoSerializer
-        implements Serializer<Object> {
+public class KryoDeserializer
+        implements Deserializer<Object> {
     private final Kryo kryo = new Kryo();
 
     @Override
@@ -71,19 +71,14 @@ public class KryoSerializer
     }
 
     @Override
-    public byte[] serialize(String topic, Object data) {
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        var output = new Output(byteArrayOutputStream);
-
-        kryo.writeClassAndObject(output, data);
-        output.flush();
-
-        return byteArrayOutputStream.toByteArray();
+    public Object deserialize(String topic, byte[] data) {
+        var byteArrayInputStream = new ByteArrayInputStream(data);
+        var input = new Input(byteArrayInputStream);
+        return this.kryo.readClassAndObject(input);
     }
 
     @Override
     public void close() {
         // do nothing
     }
-
 }
